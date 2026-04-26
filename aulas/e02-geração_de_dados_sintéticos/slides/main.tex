@@ -1,0 +1,385 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usepackage{styles/slidesmainstyle10}
+
+% ============================================================
+% METADADOS DA AULA
+% ============================================================
+\newcommand{\LessonTitle}{Geração de Dados Sintéticos de Qualidade}
+\newcommand{\LessonBg}{img/bg.png}
+\newcommand{\LessonAuthor}{Prof. Jeff Oliveira, Ph.D.}
+\newcommand{\LessonInfo}{Caso IPT | SI10 | 2026}
+
+\begin{document}
+
+% ============================================================
+% ABERTURA
+% ============================================================
+
+\coverslide{\LessonTitle}{\LessonBg}{\LessonAuthor}{\LessonInfo}
+
+\questionslide{%
+  \ql{Como sair de dados reais agregados para uma}\\[0.3em]
+  \qh{base sintética defensável}\\[0.3em]
+  \ql{sem inventar números arbitrariamente?}
+}
+
+\textslide
+  {MAPA DA AULA}
+  {}
+  {
+    Nesta aula, vamos percorrer quatro movimentos:
+
+    \vspace{0.7em}
+    entender o problema, separar evidência de hipótese,
+    projetar o modelo e validar a base gerada.
+
+    \vspace{0.7em}
+    O notebook entra como apoio e demonstração.
+    Os slides organizam o raciocínio.
+  }
+
+\begin{frame}{Arco narrativo do tutorial}
+\begin{tikzpicture}[
+  remember picture,
+  font=\small,
+  fase/.style={
+    draw, rounded corners=4pt,
+    minimum width=3.8cm, minimum height=0.75cm,
+    align=center, inner sep=4pt
+  },
+  f1/.style={fase,
+    fill=green!12, draw=green!50!black, text=green!30!black},
+  f2/.style={fase,
+    fill=orange!12, draw=orange!60!black, text=orange!40!black},
+  f3/.style={fase,
+    fill=violet!10, draw=violet!60!black, text=violet!40!black},
+  f4/.style={fase,
+    fill=blue!8, draw=blue!50!black, text=blue!40!black},
+  bloco/.style={
+    draw, rounded corners=4pt,
+    minimum width=2.4cm,
+    align=center, inner sep=5pt,
+    font=\footnotesize\bfseries
+  },
+  b1/.style={bloco, fill=green!12,  draw=green!50!black,  text=green!30!black},
+  b2/.style={bloco, fill=orange!12, draw=orange!60!black, text=orange!40!black},
+  b3/.style={bloco, fill=violet!10, draw=violet!60!black, text=violet!40!black},
+  b4/.style={bloco, fill=blue!8,    draw=blue!50!black,   text=blue!40!black},
+  mov/.style={font=\footnotesize\itshape, text=gray!70!black, align=left},
+  seta/.style={->, >=stealth, gray!60, line width=0.5pt},
+]
+
+\node[f1]   (e0) at (0, 0)      {Etapa 0 --- Configuração};
+\node[f1]   (e1) at (0,-1.0)    {Etapa 1 --- Situação real};
+\node[f2]   (e2a) at (0,-2.0)   {Etapa 2A --- Lacunas};
+\node[f2]   (e2b) at (0,-3.0)   {Etapa 2B --- Hipóteses};
+\node[f2]   (e3)  at (0,-4.0)   {Etapa 3 --- Unidade de análise};
+\node[f3]   (e4)  at (0,-5.0)   {Etapa 4 --- Schema};
+\node[f3]   (e5)  at (0,-6.0)   {Etapa 5 --- Distribuições};
+\node[f4]   (e6)  at (0,-7.0)   {Etapa 6 --- Regras de geração};
+\node[f4]   (e7)  at (0,-7.95)  {Etapa 7 --- Geração};
+\node[f4]   (e8)  at (0,-8.9)   {Etapa 8 --- Outliers};
+\node[f4]   (e9)  at (0,-9.85)  {Etapa 9 --- Validação};
+\node[f4]   (e10) at (0,-10.8)  {Etapa 10 --- Exercícios};
+
+\foreach \a/\b in {e0/e1, e1/e2a, e2a/e2b, e2b/e3,
+                   e3/e4, e4/e5, e5/e6, e6/e7,
+                   e7/e8, e8/e9, e9/e10} {
+  \draw[seta] (\a.south) -- (\b.north);
+}
+
+\node[b1, minimum height=1.85cm] at (-3.5,-0.5)
+  {Entender\\o problema};
+
+\node[b2, minimum height=3.75cm] at (-3.5,-3.0)
+  {Separar\\evidência\\de hipótese};
+
+\node[b3, minimum height=1.85cm] at (-3.5,-5.5)
+  {Projetar\\o modelo};
+
+\node[b4, minimum height=3.75cm] at (-3.5,-8.9)
+  {Construir\\e validar};
+
+\node[mov] at (3.6,  0)    {``infraestrutura''};
+\node[mov] at (3.6, -1.0)  {``o que já existe''};
+\node[mov] at (3.6, -2.0)  {``o que ainda falta''};
+\node[mov] at (3.6, -3.0)  {``o que vamos assumir''};
+\node[mov] at (3.6, -4.0)  {``em que granularidade''};
+\node[mov] at (3.6, -5.0)  {``quais variáveis''};
+\node[mov] at (3.6, -6.0)  {``com que forma estatística''};
+\node[mov] at (3.6, -7.0)  {``com que regras''};
+\node[mov] at (3.6, -7.95) {``gerar''};
+\node[mov] at (3.6, -8.9)  {``tornar realista''};
+\node[mov] at (3.6, -9.85) {``verificar coerência''};
+\node[mov] at (3.6,-10.8)  {``consolidar raciocínio''};
+
+\end{tikzpicture}
+\end{frame}
+
+% ============================================================
+% BLOCO 1 — ENTENDER O PROBLEMA
+% ============================================================
+
+\sectionslide{ENTENDER O PROBLEMA}
+
+\textslide
+  {O CASO IPT}
+  {}
+  {
+    O IPT quer tomar decisões sobre comportamento de navegação
+    em sua intranet, mas os dados disponíveis são agregados
+    e insuficientes para análise comportamental direta.
+
+    \vspace{0.8em}
+    O desafio da aula é mostrar como sair desse cenário e
+    construir uma base sintética justificável.
+  }
+
+\bulletslide
+  {O QUE O PARCEIRO QUER}
+  {}
+  {
+    \item Reduzir o tempo gasto procurando links operacionais
+    \item Aumentar o engajamento com comunicados internos
+    \item Segmentar usuários por perfil de comportamento
+    \item Sustentar decisões de redesign e testes A/B
+  }
+
+\stmtslide
+  {Para não atropelar o raciocínio}
+  {vamos trabalhar um único objetivo de negócio}
+
+\textslide
+  {RECORTE DA AULA}
+  {}
+  {
+    Nesta aula, vamos focar em:
+
+    \vspace{0.6em}
+    \textbf{aumentar o engajamento com comunicados internos}
+
+    \vspace{0.8em}
+    Os demais objetivos ficam como espaço de expansão
+    para os grupos no AF01.
+  }
+
+\textslide
+  {O QUE A PLANILHA CONTÉM}
+  {}
+  {
+    \begin{tabular}{p{3.0cm} p{5.1cm} p{3.0cm}}
+    \textbf{Aba} & \textbf{O que contém} & \textbf{Granularidade} \\
+    \\
+    Tráfego geral & Visualizadores e visitas por dia & 1 linha = 1 dia \\
+    Conteúdo popular & Itens mais visitados nos últimos 7 dias & 1 linha = 1 item \\
+    Uso por dispositivo & Desktop, mobile app, mobile web, tablet & 1 linha = 1 dia \\
+    Uso por tempo & Média de viewers por dia e hora & 1 linha = 1 janela \\
+    \end{tabular}
+  }
+
+\bulletslide
+  {O QUE A PLANILHA NÃO CONTÉM}
+  {}
+  {
+    \item Não há sessão individual
+    \item Não há perfil do usuário
+    \item Não há jornada de cliques
+    \item Não há resultado de cada visita
+  }
+
+\bulletslide
+  {O QUE JÁ CONSEGUIMOS AFIRMAR}
+  {}
+  {
+    \item O acesso é majoritariamente desktop
+    \item Há janelas claras de pico de uso
+    \item Alguns conteúdos concentram grande parte das visitas
+    \item O dado é agregado, não comportamental por sessão
+  }
+
+\rightimgslide
+  {LEITURA DESCRITIVA DOS DADOS REAIS}
+  {O heatmap temporal mostra que os dados reais já sugerem padrões de atenção e concentração de uso.\\[0.7em]
+   Ele não resolve o caso, mas ancora a passagem de descrição para hipótese.}
+  {img/ipt_heatmap_temporal.png}
+  {0.58}
+  {true}
+
+% ============================================================
+% BLOCO 2 — SEPARAR EVIDÊNCIA DE HIPÓTESE
+% ============================================================
+
+\sectionslide{SEPARAR EVIDÊNCIA DE HIPÓTESE}
+
+\stmtslide
+  {Os dados não respondem tudo}
+  {lacuna é ausência; hipótese é decisão}
+
+\textslide
+  {MAPA DE LACUNAS}
+  {}
+  {
+    \begin{tabular}{p{2.4cm} p{3.4cm} p{3.0cm} p{2.0cm}}
+    \textbf{Dimensão} & \textbf{O que já vemos} & \textbf{O que falta} & \textbf{Ponte} \\
+    \\
+    Interesse & Ranking de visitas & Leitura efetiva & Tempo de leitura \\
+    Exposição & Pico por horário & Efeito por comunicado & Âncora temporal \\
+    Perfil & Perfis citados pelo parceiro & Quem engaja mais & Perfis sintéticos \\
+    Jornada & Itens visitados & Sequência de navegação & Sessão com origem \\
+    Resultado & Visitas e viewers & Ação posterior & Variável de sucesso \\
+    \end{tabular}
+  }
+
+\textslide
+  {DA LACUNA À HIPÓTESE}
+  {}
+  {
+    \textbf{Lacuna:}
+
+    Não sabemos quem lê os comunicados nem como essa leitura
+    se distribui por sessão.
+
+    \vspace{0.8em}
+    \textbf{Hipótese:}
+
+    Em dias úteis, a maior parte das sessões de leitura de
+    comunicados ocorre em desktop, entre 8h e 11h, com alguns
+    perfis mais presentes do que outros.
+  }
+
+\stmtslide
+  {Antes de gerar qualquer base}
+  {precisamos decidir o que cada linha significa}
+
+\textslide
+  {UNIDADE DE ANÁLISE}
+  {}
+  {
+    \begin{tabular}{p{4.6cm} c c c c}
+    \textbf{Pergunta} & \textbf{Usuário} & \textbf{Sessão} & \textbf{Página} & \textbf{Clique} \\
+    \\
+    Comparar perfis acumulados & ● & ◑ & ○ & ○ \\
+    Tempo de busca e leitura & ○ & ● & ◑ & ○ \\
+    Picos por dia e hora & ○ & ● & ◑ & ◑ \\
+    Conteúdos mais atrativos & ○ & ◑ & ● & ◑ \\
+    Caminho detalhado & ○ & ◑ & ◑ & ● \\
+    \end{tabular}
+
+    \vspace{0.8em}
+    ● forte \hspace{1em} ◑ parcial \hspace{1em} ○ não se aplica
+  }
+
+\stmtslide
+  {Nem detalhe demais, nem contexto de menos}
+  {sessão é o melhor compromisso para esta aula}
+
+% ============================================================
+% BLOCO 3 — PROJETAR O MODELO
+% ============================================================
+
+\sectionslide{PROJETAR O MODELO}
+
+\stmtslide
+  {Base sintética não começa no sorteio}
+  {ela começa no desenho das variáveis}
+
+\textslide
+  {GRUPOS DE VARIÁVEIS}
+  {}
+  {
+    \textbf{Contexto:} perfil, dispositivo, dia, faixa horária
+
+    \vspace{0.6em}
+    \textbf{Comportamento:} origem, objetivo, pageviews, uso de busca
+
+    \vspace{0.6em}
+    \textbf{Tempo:} busca, leitura, total
+
+    \vspace{0.6em}
+    \textbf{Resultado:} sucesso, clique em comunicado, abandono rápido
+
+    \vspace{0.6em}
+    \textbf{Derivadas:} proporção de leitura, número de interações
+  }
+
+\bulletslide
+  {DISTRIBUIÇÕES E REGRAS}
+  {}
+  {
+    \item Contagens pedem distribuições de contagem
+    \item Tempos pedem distribuições positivas e assimétricas
+    \item Flags pedem variáveis binárias
+    \item Regras ligam uma variável ao contexto das demais
+  }
+
+\textslide
+  {ONDE O NOTEBOOK ENTRA AGORA}
+  {}
+  {
+    Neste trecho, o notebook ajuda a mostrar:
+
+    \vspace{0.6em}
+    \textbf{1.} o schema da base\\
+    \textbf{2.} a escolha das distribuições\\
+    \textbf{3.} a passagem das regras para funções geradoras
+  }
+
+% ============================================================
+% BLOCO 4 — CONSTRUIR E VALIDAR
+% ============================================================
+
+\sectionslide{CONSTRUIR E VALIDAR}
+
+\bulletslide
+  {GERAR NÃO BASTA}
+  {}
+  {
+    \item A base precisa refletir sinais reais do caso
+    \item As relações internas precisam ser coerentes
+    \item Outliers podem tornar a base mais plausível
+    \item Validar é parte da modelagem, não cosmética final
+  }
+
+\textslide
+  {VALIDAÇÃO COMO TESTE DE COERÊNCIA}
+  {}
+  {
+    Na validação, a pergunta não é:
+
+    \vspace{0.6em}
+    \textit{``o gráfico ficou bonito?''}
+
+    \vspace{0.8em}
+    A pergunta é:
+
+    \vspace{0.6em}
+    \textbf{``a base gerada continua defensável à luz do caso?''}
+  }
+
+\rightimgslide
+  {TENSÃO CENTRAL DO IPT}
+  {No fechamento, a base sintética já permite enxergar o conflito central do caso.\\[0.7em]
+   Se o tempo buscando cresce demais em relação ao tempo lendo, a navegação deixa de apoiar o objetivo do parceiro.}
+  {img/ipt_tensao_central.png}
+  {0.58}
+  {true}
+
+\bulletslide
+  {O QUE OS ALUNOS DEVEM LEVAR}
+  {}
+  {
+    \item Dado sintético não é dado inventado sem critério
+    \item Toda hipótese precisa ser explicitada
+    \item Unidade de análise muda o que a base pode mostrar
+    \item Gerar exige validar coerência com o caso
+  }
+
+\stmtslide
+  {No fim, o ponto não é complexidade}
+  {dados sintéticos bons são dados justificáveis}
+
+\finalslide{img/final-img.png}
+
+\end{document}

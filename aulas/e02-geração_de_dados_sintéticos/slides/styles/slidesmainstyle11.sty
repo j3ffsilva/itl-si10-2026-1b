@@ -1,0 +1,531 @@
+\ProvidesPackage{styles/slidesmainstyle11}
+
+% ============================================================
+% PACOTES
+% ============================================================
+
+\RequirePackage{fontspec}
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{listings}
+\usetikzlibrary{calc, shadings, fadings}
+\usepackage{ifthen}
+
+% ============================================================
+% FONTES
+% ============================================================
+
+\newfontfamily\BebasNeue[
+  Path        = fonts/Bebas_Neue/,
+  UprightFont = BebasNeue-Regular.ttf,
+  AutoFakeBold = 1.5,
+]{BebasNeue}
+
+\setmainfont[
+  Path           = fonts/Inter-4.1/extras/ttf/,
+  UprightFont    = Inter-Regular.ttf,
+  BoldFont       = Inter-Bold.ttf,
+  ItalicFont     = Inter-Italic.ttf,
+  BoldItalicFont = Inter-BoldItalic.ttf,
+]{Inter}
+
+\newfontfamily\InterLight[
+  Path        = fonts/Inter-4.1/extras/ttf/,
+  UprightFont = Inter-Light.ttf,
+]{InterLight}
+
+% ============================================================
+% PALETA DE CORES
+% ============================================================
+
+\definecolor{bgDark}   {HTML}{382D61}  % Roxo escuro — fundo dos slides escuros
+\definecolor{stripe}   {HTML}{303030}  % Cinza escuro — textos e faixa inferior
+\definecolor{accent}   {HTML}{303030}  % Linha de separação da faixa inferior
+\definecolor{textMuted}{HTML}{FFFFFF}  % Branco — texto secundário na faixa
+\definecolor{textDim}  {HTML}{8C85B0}  % Roxo claro — texto apagado
+\definecolor{bgLightGreen}  {HTML}{A8DADC}  % Verde-água - fundo de divisões de seção
+\definecolor{codegreen}{RGB}{0,120,80}
+
+% ============================================================
+% DEFINE JavaScript
+% ============================================================
+
+\lstdefinelanguage{JavaScript}{
+  keywords={const,let,var,function,return,if,else,for,while,of,in},
+  sensitive=true,
+  comment=[l]{//},
+  morestring=[b]",
+  morestring=[b]',
+}
+
+% ============================================================
+% BEAMER: LIMPEZA DE ELEMENTOS PADRÃO
+% ============================================================
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamercolor{background canvas}{bg=white}
+
+% ============================================================
+% ATALHOS PARA FORMATAÇÃO DE PERGUNTAS
+% ============================================================
+
+% \ql{} — texto apagado (textDim)
+\newcommand{\ql}[1]{{\color{textDim}#1}}
+
+% \qh{} — texto destacado (branco, tamanho maior via scaling)
+\newcommand{\qh}[1]{{\color{white}\mdseries #1}}
+
+% ============================================================
+% SLIDE: CAPA
+% ============================================================
+%
+% \coverslide{título}{imagem de fundo}{autor}{info da aula}
+%
+% A imagem de fundo é opcional — passe {} para omitir.
+%
+\newcommand{\coverslide}[4]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+
+      % Fundo base
+      \fill[bgDark]
+        (current page.south west) rectangle (current page.north east);
+
+      % Imagem de fundo (opcional)
+      \if\relax\detokenize{#2}\relax\else
+        \node[
+          at=(current page.center),
+          opacity=0.7
+        ] {%
+          \includegraphics[
+            width=\paperwidth,
+            height=\paperheight,
+            keepaspectratio=false
+          ]{#2}};
+
+        % Overlay roxo para "recolorir" a imagem
+        \fill[bgDark, opacity=0.5]
+          (current page.south west) rectangle (current page.north east);
+      \fi
+
+      % Círculos decorativos
+      \draw[white, opacity=0.03, line width=0.6pt]
+        ($(current page.north east) + (-1.5cm,-1.5cm)$) circle (5.5cm);
+      \draw[white, opacity=0.02, line width=0.5pt]
+        ($(current page.south west) + (1.2cm, 1.2cm)$) circle (3.5cm);
+
+      % Título centralizado
+      \node[
+        text=white,
+        font=\BebasNeue\fontsize{30}{30}\selectfont,
+        text width=0.86\paperwidth,
+        align=center
+      ] at ($(current page.center) + (0, 0.6cm)$) {#1};
+
+      % Faixa inferior
+      \fill[stripe]
+        (current page.south west)
+        rectangle ($(current page.south east) + (0, 1cm)$);
+
+      \draw[accent, line width=0.5pt]
+        ($(current page.south west) + (0, 1cm)$)
+        -- ($(current page.south east) + (0, 1cm)$);
+
+      % Autor (esquerda) e info da aula (direita)
+      \node[
+        text=white,
+        font=\fontsize{8}{8}\selectfont\bfseries,
+        anchor=west
+      ] at ($(current page.south west) + (0.65cm, 0.50cm)$) {#3};
+
+      \node[
+        text=textMuted,
+        font=\fontsize{8}{8}\selectfont,
+        anchor=east
+      ] at ($(current page.south east) + (-0.65cm, 0.50cm)$) {#4};
+
+    \end{tikzpicture}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: PERGUNTA
+% ============================================================
+%
+% \questionslide{texto}
+%
+% Use \ql{} e \qh{} dentro do texto para alternar entre
+% partes apagadas e destacadas.
+%
+\newcommand{\questionslide}[1]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+
+      % Fundo roxo
+      \fill[bgDark]
+        (current page.south west) rectangle (current page.north east);
+
+      % Círculos decorativos
+      \draw[white, opacity=0.05, line width=0.6pt]
+        ($(current page.north east) + (-1.5cm,-1.5cm)$) circle (5.5cm);
+      \draw[white, opacity=0.04, line width=0.5pt]
+        ($(current page.south west) + (1.2cm, 1.2cm)$) circle (3.5cm);
+
+      % Texto da pergunta
+      \node[
+        font=\BebasNeue\fontsize{30}{38}\selectfont,
+        text width=0.72\paperwidth,
+        align=left,
+        anchor=west,
+      ] at ($(current page.west) + (0.65cm, 0cm)$) {#1};
+
+    \end{tikzpicture}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: DIVISÃO DE SEÇÃO
+% ============================================================
+%
+% \sectionslide{texto}
+%
+% Cria um slide de transição para marcar início de seção,
+% com fundo colorido e texto centralizado.
+%
+\newcommand{\sectionslide}[1]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+
+      \fill[bgLightGreen]
+        (current page.south west) rectangle (current page.north east);
+
+      \node[
+        text=bgDark,
+        font=\BebasNeue\fontsize{28}{36}\selectfont,
+        text width=0.86\paperwidth,
+        align=center,
+      ] at (current page.center) {#1};
+
+    \end{tikzpicture}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: DECLARAÇÃO (statement)
+% ============================================================
+%
+% \stmtslide{linha pequena}{linha de destaque}[tamanho][leading][vspace]
+%
+% A linha pequena aparece em InterLight acima;
+% a linha de destaque em Inter Bold, grande, abaixo.
+% Os três últimos argumentos são opcionais (padrão: 28, 35, 0.7em).
+%
+\NewDocumentCommand{\stmtslide}{ m m O{28} O{35} O{0.7em} }{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+
+      % Círculos decorativos
+      \draw[bgDark, opacity=0.07, line width=0.6pt]
+        ($(current page.north east) + (-1.5cm,-1.5cm)$) circle (5.5cm);
+      \draw[bgDark, opacity=0.06, line width=0.5pt]
+        ($(current page.south west) + (1.2cm, 1.2cm)$) circle (3.5cm);
+    \end{tikzpicture}
+
+    \vspace{0pt}
+    \begin{minipage}[c][\paperheight][c]{\textwidth}
+      \hspace{0.65cm}
+      \begin{minipage}{0.86\textwidth}
+        \raggedright
+        {\InterLight\fontsize{9}{15}\selectfont\color{stripe}#1\par}
+        \vspace{#5}
+        {\fontsize{#3}{#4}\selectfont\bfseries\color{stripe}#2\par}
+      \end{minipage}
+    \end{minipage}
+
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: BULLETS
+% ============================================================
+%
+% \bulletslide{título}{subtítulo}{itens}
+%
+% O subtítulo é opcional — passe {} para omitir.
+% Use \item no corpo para cada item da lista.
+%
+\newcommand{\bulletslide}[3]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[
+        text=bgDark,
+        font=\BebasNeue\fontsize{27}{30}\selectfont,
+        text width=0.86\paperwidth,
+        align=center,
+        anchor=north west,
+      ] at ($(current page.north west) + (0.65cm, -0.55cm)$) {#1};
+      \ifx\relax#2\relax\else
+        \node[
+          text=bgDark,
+          font=\InterLight\fontsize{9}{12}\selectfont,
+          text width=0.86\paperwidth,
+          align=center,
+          anchor=north west,
+        ] at ($(current page.north west) + (0.65cm, -1.5cm)$) {#2};
+      \fi
+    \end{tikzpicture}
+
+    \setbeamertemplate{itemize item}{%
+      \tikz\node[
+        fill=bgDark,
+        minimum width=0.55em,
+        minimum height=0.55em,
+        inner sep=0pt,
+      ] {};%
+    }
+
+    \vspace{1.2cm}
+    \begin{minipage}[t][0.82\paperheight][c]{\paperwidth}
+      \hspace{0.65cm}
+      \begin{minipage}{0.86\paperwidth}
+        \color{stripe}
+        \fontsize{11}{18}\selectfont
+        \begin{itemize}
+          \setlength{\itemsep}{6pt}
+          \setlength{\leftmargini}{1em}
+          #3
+        \end{itemize}
+      \end{minipage}
+    \end{minipage}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: TEXTO CORRIDO
+% ============================================================
+%
+% \textslide{título}{subtítulo}{corpo}
+%
+% O subtítulo é opcional — passe {} para omitir.
+% O corpo é texto livre, sem \item.
+%
+\newcommand{\textslide}[3]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[
+        text=bgDark,
+        font=\BebasNeue\fontsize{27}{30}\selectfont,
+        text width=0.86\paperwidth,
+        align=center,
+        anchor=north west,
+      ] at ($(current page.north west) + (0.65cm, -0.55cm)$) {#1};
+      \ifx\relax#2\relax\else
+        \node[
+          text=bgDark,
+          font=\InterLight\fontsize{9}{12}\selectfont,
+          text width=0.86\paperwidth,
+          align=center,
+          anchor=north west,
+        ] at ($(current page.north west) + (0.65cm, -1.5cm)$) {#2};
+      \fi
+    \end{tikzpicture}
+
+    \vspace{1.2cm}
+    \begin{minipage}[t][0.82\paperheight][c]{\paperwidth}
+      \hspace{0.65cm}
+      \begin{minipage}{0.86\paperwidth}
+        \color{stripe}
+        \fontsize{11}{18}\selectfont
+        #3
+      \end{minipage}
+    \end{minipage}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: IMAGEM À DIREITA
+% ============================================================
+%
+% \rightimgslide{título}{subtítulo}{imagem}{fração}{fade}
+%
+% A fração define quanto da largura a imagem ocupa (ex: 0.5).
+% O texto ocupa o restante, à esquerda.
+% O fade habilita/desabilita o gradiente na borda (true/false).
+%
+\newcommand{\rightimgslide}[5]{%
+  \begin{frame}[plain]
+    \pgfmathsetmacro{\imgfrac}{#4}
+    \pgfmathsetmacro{\textfrac}{1 - #4}
+
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[anchor=south east, inner sep=0pt] at (current page.south east) {%
+        \includegraphics[
+          width=\imgfrac\paperwidth,
+          height=\paperheight,
+          keepaspectratio=false]{#3}};
+      % Fade na borda esquerda da imagem (apenas se #5 = true)
+      \ifthenelse{\equal{#5}{true}}{
+        \fill[white, path fading=east]
+          ($(current page.south east) + (-\imgfrac\paperwidth, 0)$)
+          rectangle
+          ($(current page.south east) + ({(-\imgfrac+0.18)*\paperwidth}, \paperheight)$);
+      }{}
+    \end{tikzpicture}
+
+    \vspace{0pt}
+    \begin{minipage}[c][\paperheight][c]{\textfrac\paperwidth}
+      \hspace{0.65cm}
+      \begin{minipage}{\dimexpr\textfrac\paperwidth - 1.3cm\relax}
+        {\fontsize{28}{34}\selectfont\bfseries\color{stripe}#1\par}
+        \vspace{0.55em}
+        {\InterLight\fontsize{9}{14}\selectfont\color{stripe}#2\par}
+      \end{minipage}
+    \end{minipage}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: IMAGEM À ESQUERDA
+% ============================================================
+%
+% \leftimgslide{título}{subtítulo}{imagem}{fração da largura}{fade}
+%
+% A fração define quanto da largura a imagem ocupa (ex: 0.5).
+% O texto ocupa o restante, à direita.
+% O fade habilita/desabilita o gradiente na borda (true/false).
+%
+\newcommand{\leftimgslide}[5]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[anchor=south west, inner sep=0pt] at (current page.south west) {%
+        \includegraphics[
+          width=#4\paperwidth,
+          height=\paperheight,
+          keepaspectratio=false]{#3}};
+      % Fade na borda direita da imagem (apenas se #5 = true)
+      \ifthenelse{\equal{#5}{true}}{
+        \fill[white, path fading=west]
+          ($(current page.south west) + (#4\paperwidth, 0)$)
+          rectangle
+          ($(current page.south west) + ({(#4-0.18)*\paperwidth}, \paperheight)$);
+      }{}
+      \node[
+        anchor=west,
+        text width={(1-#4)*\paperwidth - 1.3cm},
+        align=left,
+      ] at ($(current page.west) + (#4\paperwidth + 0.65cm, 0)$) {%
+        {\fontsize{28}{34}\selectfont\bfseries\color{stripe}#1\par}%
+        \vspace{0.55em}%
+        {\InterLight\fontsize{9}{14}\selectfont\color{stripe}#2\par}%
+      };
+    \end{tikzpicture}
+  \end{frame}
+}
+
+
+% ============================================================
+% SLIDE: SOMENTE IMAGEM
+% ============================================================
+%
+% \imgslide{imagem}
+%
+\newcommand{\imgslide}[1]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[anchor=center, inner sep=0pt] at (current page.center) {%
+        \includegraphics[
+          width=\paperwidth,
+          height=\paperheight,
+          keepaspectratio=true]{#1}};
+    \end{tikzpicture}
+  \end{frame}
+}
+
+% ============================================================
+% SLIDE: CÓDIGO
+% ============================================================
+%
+% \begin{singlecodeslide}{título}{linguagem}
+% \begin{lstlisting}
+% ...código...
+% \end{lstlisting}
+% \end{singlecodeslide}
+%
+\newenvironment{singlecodeslide}[2]{%
+  \begin{frame}[plain, fragile, environment=singlecodeslide]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[
+        text=bgDark,
+        font=\BebasNeue\fontsize{27}{30}\selectfont,
+        text width=0.86\paperwidth,
+        align=center,
+        anchor=north west,
+      ] at ($(current page.north west) + (0.65cm, -0.55cm)$) {#1};
+    \end{tikzpicture}
+
+    \vspace{1.2cm}
+    \begin{minipage}[t][0.82\paperheight][c]{\paperwidth}
+      \hspace{0.65cm}
+      \begin{minipage}{0.86\paperwidth}
+        \lstset{
+          language=#2,
+          basicstyle=\ttfamily\fontsize{10}{15}\selectfont\color{stripe},
+          keywordstyle=\bfseries\color{bgDark},
+          commentstyle=\color{codegreen},
+          stringstyle=\color{bgDark},
+          backgroundcolor=\color{gray!02},
+          frame=none,
+          xleftmargin=0.8em,
+          xrightmargin=0.8em,
+          breaklines=true,
+          breakatwhitespace=false,
+          columns=fullflexible,
+          keepspaces=true,
+          showstringspaces=false,
+          numbers=left,
+          numberstyle=\fontsize{7}{7}\selectfont\color{textDim},
+          numbersep=8pt,
+        }
+}{%
+      \end{minipage}
+    \end{minipage}
+  \end{frame}
+}
+
+
+% ============================================================
+% SLIDE FINAL
+% ============================================================
+%
+% \finalslide{imagem}
+%
+\newcommand{\finalslide}[1]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture, overlay]
+      \fill[white]
+        (current page.south west) rectangle (current page.north east);
+      \node[anchor=center, inner sep=0pt] at (current page.center) {%
+        \includegraphics[
+          width=\paperwidth,
+          height=\paperheight,
+          keepaspectratio=true]{#1}};
+    \end{tikzpicture}
+  \end{frame}
+}
