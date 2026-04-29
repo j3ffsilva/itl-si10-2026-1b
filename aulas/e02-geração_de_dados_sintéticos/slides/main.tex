@@ -9,26 +9,20 @@
 \newcommand{\LessonTitle}{Geração de Dados Sintéticos de Qualidade}
 \newcommand{\LessonBg}{img/bg.png}
 \newcommand{\LessonAuthor}{Prof. Jeff Oliveira, Ph.D.}
-\newcommand{\LessonInfo}{Caso IPT | SI10 | 2026}
+\newcommand{\LessonInfo}{Encontro 02 | Sem 02 | 29/04/2026 | 10h}
 
 \begin{document}
 
 \coverslide{\LessonTitle}{\LessonBg}{\LessonAuthor}{\LessonInfo}
 
 \textslide
-  {MAPA DA AULA}
+  {MAPA DO CADERNO}
   {}
   {
-    Vamos acompanhar o mesmo caminho do notebook, mas em versão enxuta:
-
     \vspace{0.7em}
-    \textbf{Passo 0:} fixar semente e garantir reprodutibilidade.\\
     \textbf{Passos 1, 2A e 2B:} entender o caso, identificar lacunas e propor hipóteses.\\
     \textbf{Passos 3 e 4:} decidir a unidade de análise e o schema da base.\\
     \textbf{Passos 5, 6, 7 e 8:} escolher distribuições, gerar sessões e inserir outliers plausíveis.
-
-    \vspace{0.8em}
-    A meta não é sofisticação. A meta é produzir uma base sintética simples e justificável.
   }
 
 \sectionslide{ENTENDIMENTO DO PROBLEMA}
@@ -40,44 +34,32 @@
     O IPT quer tomar decisões sobre comportamento de navegação na intranet.
     O problema é que os dados disponíveis são agregados e não mostram diretamente
     o comportamento de cada visita.
-
-    \vspace{0.8em}
-    A aula mostra como sair desse ponto e montar uma base sintética mínima,
-    coerente com o caso e fácil de explicar.
   }
 
 \bulletslide
   {O QUE O PARCEIRO QUER}
   {}
   {
-    \item Reduzir o tempo gasto procurando links operacionais
-    \item Aumentar o engajamento com comunicados internos
-    \item Segmentar usuários por perfil de comportamento
-    \item Sustentar decisões de redesign e testes A/B
+    \item ON1: Reduzir o tempo gasto procurando links operacionais
+    \item ON2: Aumentar o engajamento com comunicados internos
+    \item ON3: Segmentar usuários por perfil de comportamento
+    \item ON4: Sustentar decisões de redesign e testes A/B
   }
 
 \questionslide{%
-  \ql{O que sabemos do caso?}\\[0.3em]
-  \qh{Quais sinais já aparecem}\\[0.3em]
-  \ql{mesmo com dados agregados?}
+  \ql{O que}\\[0.3em]
+  \ql{sabemos do caso}\ql{?}
 }
 
 \stmtslide
-  {Para manter a aula simples}
-  {vamos trabalhar um único objetivo de negócio}
+  {VAMOS TRABALHAR UM ÚNICO}
+  {objetivo de negócio}
 
 \textslide
   {RECORTE DA AULA}
   {}
   {
-    Nesta aula, vamos focar em:
-
-    \vspace{0.6em}
     \textbf{aumentar o engajamento com comunicados internos}
-
-    \vspace{0.8em}
-    Esse recorte reduz a complexidade, mas preserva o raciocínio central
-    de geração de dados sintéticos.
   }
 
 \textslide
@@ -97,7 +79,7 @@
   }
 
 \bulletslide
-  {O QUE JÁ CONSEGUIMOS AFIRMAR}
+  {O QUE CONSEGUIMOS AFIRMAR?}
   {}
   {
     \item O acesso é majoritariamente desktop
@@ -107,13 +89,12 @@
   }
 
 \questionslide{%
-  \ql{O que falta nos dados?}\\[0.3em]
-  \qh{Onde estão as lacunas}\\[0.3em]
-  \ql{que impedem análise comportamental direta?}
+  \ql{O que}\\[0.3em]
+  \qh{falta nos dados}\ql{?}
 }
 
 \bulletslide
-  {LACUNAS PRINCIPAIS}
+  {LACUNAS}
   {}
   {
     \item Não há sessão individual
@@ -123,9 +104,8 @@
   }
 
 \questionslide{%
-  \ql{Como virar lacuna em hipótese?}\\[0.3em]
-  \qh{Se o dado não existe,}\\[0.3em]
-  \ql{o que podemos assumir com critério?}
+  \ql{Como transformar a lacuna}\\[0.3em]
+  \qh{em hipótese}\ql{?}
 }
 
 \textslide
@@ -136,16 +116,10 @@
     se distribui ao longo das sessões.
 
     \vspace{0.8em}
-    \textbf{Hipótese simples:} em dias úteis, a maior parte das sessões de
+    \textbf{Hipótese:} em dias úteis, a maior parte das sessões de
     leitura ocorre em desktop, entre 8h e 11h, com alguns perfis lendo mais
     do que outros.
   }
-
-\questionslide{%
-  \ql{O que cada linha da base representa?}\\[0.3em]
-  \qh{Usuário, sessão, página}\\[0.3em]
-  \ql{ou clique?}
-}
 
 \stmtslide
   {Decisão de modelagem}
@@ -154,9 +128,8 @@
 \sectionslide{MODELAGEM DA BASE}
 
 \questionslide{%
-  \ql{Quais colunas a base terá?}\\[0.3em]
-  \qh{Antes de gerar,}\\[0.3em]
-  \ql{precisamos nomear as variáveis.}
+  \ql{Quais colunas o}\\[0.3em]
+  \qh{dataset}\ql{terá?}
 }
 
 \begin{singlecodeslide}{SCHEMA MINIMO DA BASE}{Python}
@@ -164,19 +137,8 @@
 colunas = [
     "session_id",
     "perfil_usuario",
-    "tipo_dispositivo",
     "dia_semana",
-    "faixa_horaria",
-    "origem_acesso",
-    "objetivo_sessao",
-    "pageviews",
-    "tempo_busca_segundos",
-    "tempo_leitura_segundos",
-    "tempo_total_segundos",
-    "usou_busca",
-    "clicou_comunicado",
-    "sucesso_encontrou_o_que_queria",
-    "abandono_rapido",
+    "tempo_sessao_segundos"
 ]
 \end{lstlisting}
 \end{singlecodeslide}
@@ -189,7 +151,7 @@ colunas = [
 
 \rightimgslide
   {BERNOULLI}
-  {Use Bernoulli quando a variavel so pode assumir dois valores.\\[0.7em]
+  {Use Bernoulli quando a variavel só pode assumir dois valores.\\[0.7em]
    Exemplo trivial: \texttt{clicou\_comunicado = 1} ou \texttt{0}.}
   {img/dist_bernoulli.png}
   {0.48}
@@ -197,7 +159,7 @@ colunas = [
 
 \rightimgslide
   {LOG-NORMAL}
-  {Use log-normal quando a variavel e sempre positiva e assimetrica.\\[0.7em]
+  {Use log-normal quando a variável é sempre positiva e assimétrica.\\[0.7em]
    Exemplo trivial: \texttt{tempo\_leitura\_segundos}.}
   {img/dist_lognormal.png}
   {0.48}
@@ -205,51 +167,16 @@ colunas = [
 
 \rightimgslide
   {POISSON}
-  {Use Poisson quando a variavel representa contagens em um intervalo.\\[0.7em]
-   Exemplo trivial: \texttt{pageviews} na sessao.}
+  {Use Poisson quando a variável representa contagens em um intervalo.\\[0.7em]
+   Exemplo trivial: \texttt{pageviews} na sessão.}
   {img/dist_poisson.png}
   {0.48}
   {true}
 
-\begin{singlecodeslide}{REGRAS DE GERACAO}{Python}
-\begin{lstlisting}
-def escolher_objetivo(perfil):
-    if perfil == "pesquisador":
-        return sorteio({
-            "ler_comunicado": 0.45,
-            "buscar_documento": 0.35,
-            "buscar_sistema": 0.20,
-        })
-    return sorteio({
-        "ler_comunicado": 0.25,
-        "buscar_documento": 0.25,
-        "buscar_sistema": 0.50,
-    })
-
-def prob_clicar_comunicado(objetivo, faixa_horaria):
-    p = 0.12
-    if objetivo == "ler_comunicado":
-        p += 0.58
-    if faixa_horaria == "08-11h":
-        p += 0.08
-    return min(p, 0.95)
-\end{lstlisting}
-\end{singlecodeslide}
-
-\begin{singlecodeslide}{GERANDO UMA SESSAO}{Python}
+\begin{singlecodeslide}{GERANDO SESSÕES SINTÉTICAS}{Python}
 \begin{lstlisting}
 for session_id in range(n):
-    perfil = escolher_perfil()
-    dispositivo = escolher_dispositivo()
-    dia = escolher_dia_semana()
-    faixa = escolher_faixa_horaria()
-    objetivo = escolher_objetivo(perfil)
-
-    pageviews = np.random.poisson(lam_por_objetivo[objetivo])
-    tempo_busca = np.random.lognormal(*param_busca[objetivo])
-    tempo_leitura = np.random.lognormal(*param_leitura[objetivo])
-    clicou = bernoulli(prob_clicar_comunicado(objetivo, faixa))
-
+    tempo_sessao_segundos = np.random.lognormal(*param_busca[objetivo])
     linha = montar_sessao(
         session_id, perfil, dispositivo, dia, faixa,
         objetivo, pageviews, tempo_busca, tempo_leitura, clicou
@@ -258,7 +185,7 @@ for session_id in range(n):
 \end{lstlisting}
 \end{singlecodeslide}
 
-\sectionslide{REALISMO E FECHAMENTO}
+\sectionslide{REALISMO}
 
 \begin{singlecodeslide}{INSERINDO OUTLIERS}{Python}
 \begin{lstlisting}
@@ -280,9 +207,9 @@ df["abandono_rapido"] = (
   {}
   {
     \item Fixar semente ajuda a reproduzir o experimento
-    \item Lacuna e hipotese nao sao a mesma coisa
-    \item Unidade de analise define o que a base consegue mostrar
-    \item Dado sintetico bom e dado simples, explicavel e justificavel
+    \item Lacuna e hipótese não são a mesma coisa
+    \item Unidade de análise define o que a base consegue mostrar
+    \item Dado sintético bom e dado simples, explicável e justificável
   }
 
 \finalslide{img/final-img.png}

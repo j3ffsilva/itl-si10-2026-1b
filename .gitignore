@@ -50,6 +50,9 @@ env/
 *.log
 *.pdf
 
+# Exportacoes temporarias de graficos Plotly/Chrome
+.plotly-export/
+
 # ============================================================
 # Artefatos derivados dos slides
 # ============================================================
