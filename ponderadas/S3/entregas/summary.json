@@ -1,0 +1,148 @@
+{
+  "submissions": [
+    {
+      "student": "Bernardo de Figueiredo Meirelles",
+      "kind": "github",
+      "status": "downloaded",
+      "path": "entregas/01-bernardo-de-figueiredo-meirelles"
+    },
+    {
+      "student": "Cibele Figueredo Leal",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/02-cibele-figueredo-leal"
+    },
+    {
+      "student": "Daniel Zular",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/03-daniel-zular"
+    },
+    {
+      "student": "David Deodato Alvarenga Nascimento",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/04-david-deodato-alvarenga-nascimento"
+    },
+    {
+      "student": "Enzo Salvador Barci",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/05-enzo-salvador-barci"
+    },
+    {
+      "student": "Fernanda Correia Nascimento",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/06-fernanda-correia-nascimento"
+    },
+    {
+      "student": "Freddy Mester Harari",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/07-freddy-mester-harari"
+    },
+    {
+      "student": "Gabriela Silva",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/08-gabriela-silva"
+    },
+    {
+      "student": "Igor Sampaio Silva",
+      "kind": "drive_or_colab",
+      "status": "failed",
+      "path": "entregas/09-igor-sampaio-silva"
+    },
+    {
+      "student": "Isabelly Maia Montalvão",
+      "kind": "github",
+      "status": "downloaded",
+      "path": "entregas/10-isabelly-maia-montalvao"
+    },
+    {
+      "student": "Isadora Tribst Gatto",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/11-isadora-tribst-gatto"
+    },
+    {
+      "student": "Kaio Vittor Martins Silva",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/12-kaio-vittor-martins-silva"
+    },
+    {
+      "student": "Leonardo Nigri Griner",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/13-leonardo-nigri-griner"
+    },
+    {
+      "student": "Leonardo Souza Martins",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/14-leonardo-souza-martins"
+    },
+    {
+      "student": "Marcelo Faska Sitton",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/15-marcelo-faska-sitton"
+    },
+    {
+      "student": "Marcelo Rubim Rossignolli",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/16-marcelo-rubim-rossignolli"
+    },
+    {
+      "student": "Mariana de Paula Barbosa Souza",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/17-mariana-de-paula-barbosa-souza"
+    },
+    {
+      "student": "Matheus Fernandes Guimarães de Sousa",
+      "kind": "drive_or_colab",
+      "status": "failed",
+      "path": "entregas/18-matheus-fernandes-guimaraes-de-sousa"
+    },
+    {
+      "student": "Mirella Borim Lima",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/19-mirella-borim-lima"
+    },
+    {
+      "student": "Moyses Birman Anijar",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/20-moyses-birman-anijar"
+    },
+    {
+      "student": "Paulo Octavio de Paula",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/21-paulo-octavio-de-paula"
+    },
+    {
+      "student": "Pedro El Haouli Faria",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/22-pedro-el-haouli-faria"
+    },
+    {
+      "student": "Ricardo de Toledo Planas",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/23-ricardo-de-toledo-planas"
+    },
+    {
+      "student": "Stefano Tamer Parente",
+      "kind": "drive_or_colab",
+      "status": "downloaded",
+      "path": "entregas/24-stefano-tamer-parente"
+    }
+  ]
+}
