@@ -46,9 +46,8 @@ env/
 *.blg
 *.run.xml
 
-# Logs e PDFs gerados localmente
+# Logs gerados localmente
 *.log
-*.pdf
 
 # Exportacoes temporarias de graficos Plotly/Chrome
 .plotly-export/
