@@ -53,6 +53,9 @@ env/
 # Exportacoes temporarias de graficos Plotly/Chrome
 .plotly-export/
 
+# Repositorios clonados dentro de entregas
+**/entregas/*/repo/
+
 # ============================================================
 # Artefatos derivados dos slides
 # ============================================================
